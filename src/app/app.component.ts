@@ -41,7 +41,8 @@ import { IonNote } from '@ionic/angular';
 })
 export class AppComponent {
   protected readonly appPages = [
-    { title: 'Películas', url: '/folder/Peliculas', icon: 'film' }
+    { title: 'Películas', url: '/folder/Peliculas', icon: 'film' },
+    { title: 'Mis Favoritas', url: '/folder/favoritas', icon: 'heart' },
   ];
 
   constructor() {

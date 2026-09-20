@@ -1,0 +1,22 @@
+<ion-card class="tarjeta-pelicula" [class.seleccionada]="esSeleccionada">
+  <img 
+    [src]="pelicula.poster" 
+    [alt]="pelicula.titulo" 
+    class="img-catalogo" 
+    (click)="onAbrirModal()" 
+  />
+
+  <ion-card-header>
+    <ion-card-title>{{ pelicula.titulo }}</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-button 
+      expand="block" 
+      size="small" 
+      [color]="esSeleccionada ? 'danger' : (pelicula.seleccionada ? 'success' : 'primary')" 
+      (click)="onAccionBoton()">
+      {{ textoBoton }}
+    </ion-button>
+  </ion-card-content>
+</ion-card>

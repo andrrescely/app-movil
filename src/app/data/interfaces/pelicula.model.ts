@@ -1,8 +1,11 @@
+import { Rating } from './rating.model';
+
 export interface Pelicula {
   id: number;
   titulo: string;
   poster: string;
   año: number;
   seleccionada: boolean;
-  descripcion? : string;
+  descripcion?: string;
+  rating?: Rating;
 }

@@ -3,117 +3,127 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Catálogo de Películas</ion-title>
+    <ion-title>
+      {{ folder() === 'favoritas' ? 'Favoritos' : 'Catálogo de Películas' }}
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <ion-grid>
 
-    <!-- 1. Two-Way Binding + Property Binding -->
-    <ion-row class="ion-align-items-center ion-margin-bottom">
-      <ion-col size="12" size-md="8">
-        <ion-input 
-          label="Buscar película" 
-          label-placement="floating"
-          fill="outline" 
-          [disabled]="deshabilitarFiltro" 
-          [(ngModel)]="filtroBusqueda">
-        </ion-input>
-        <!-- Interpolación -->
-        <ion-note class="ion-margin-top">Buscando: <strong>{{ filtroBusqueda }}</strong></ion-note>
-      </ion-col>
-      <ion-col size="12" size-md="4">
-
-        <!-- 2. Event Binding -->
-        <ion-button expand="block" (click)="alternarEstadoFiltro()">
-          {{ deshabilitarFiltro ? 'Habilitar Búsqueda' : 'Deshabilitar Búsqueda' }}
-        </ion-button>
-      </ion-col>
-    </ion-row>
-
-   
-
-    <ion-row>
-      <ion-col size="12">
-        <h2>Catálogo Disponible</h2>
-      </ion-col>
-      @for (item of peliculasFiltradas; track item.id) {
-        <ion-col size="12" size-xs="6" size-sm="4" size-md="3">
-          <ion-card class="tarjeta-pelicula">
-            <!-- Property Binding en la imagen de la tarjeta -->
-            <!--<img [src]="item.poster" [alt]="item.titulo" class="img-catalogo" />-->
-            <img [src]="item.poster" [alt]="item.titulo" class="img-catalogo" (click)="abrirModal(item)" />
-            <ion-card-header>
-              <ion-card-title>{{ item.titulo }}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-
-              <!-- Event Binding para seleccionar/deseleccionar -->
-              <ion-button expand="block" size="small" [color]="item.seleccionada ? 'success' : 'primary'" (click)="seleccionarPelicula(item)">
-                {{ item.seleccionada ? 'Seleccionada' : 'Seleccionar' }}
-              </ion-button>
-            </ion-card-content>
-          </ion-card>
+    <!-- PANTALLA 2: SI ESTÁS EN FAVORITOS -->
+    @if (folder() === 'favoritas') {
+      <ion-row class="ion-justify-content-center ion-align-items-center" style="height: 60vh;">
+        <ion-col size="12" class="ion-text-center">
+          <h2>Aún no tienes películas en favoritos</h2>
+          <p>Esta sección estará disponible próximamente.</p>
         </ion-col>
-      }
-    </ion-row>
+      </ion-row>
+    }
 
-    <ion-row class="ion-margin-top">
-      <ion-col size="12">
-        <hr />
-        <h2>Mi Lista de Películas Seleccionadas ({{ peliculasSeleccionadas.length }})</h2>
-      </ion-col>
+    <!-- PANTALLA 1: SI ESTÁS EN CUALQUIER OTRA RUTA (CATÁLOGO / PRINCIPAL) -->
+    @else {
 
-      @if (peliculasSeleccionadas.length === 0) {
+      <!-- Buscador -->
+      <ion-row class="ion-align-items-center ion-margin-bottom">
+        <ion-col size="12" size-md="8">
+          <ion-input 
+            label="Buscar película" 
+            label-placement="floating"
+            fill="outline" 
+            [disabled]="deshabilitarFiltro" 
+            [(ngModel)]="filtroBusqueda">
+          </ion-input>
+          <ion-note class="ion-margin-top">Buscando: <strong>{{ filtroBusqueda }}</strong></ion-note>
+        </ion-col>
+        <ion-col size="12" size-md="4">
+          <ion-button expand="block" (click)="alternarEstadoFiltro()">
+            {{ deshabilitarFiltro ? 'Habilitar Búsqueda' : 'Deshabilitar Búsqueda' }}
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+      <!-- Catálogo Disponible -->
+      <ion-row class="ion-align-items-stretch">
+  @for (item of peliculasFiltradas; track item.id) {
+    <ion-col size="12" size-xs="6" size-sm="4" size-md="3" class="ion-flex">
+      <app-pelicula-card 
+        [pelicula]="item"
+        [textoBoton]="item.seleccionada ? 'Seleccionada' : 'Seleccionar'"
+        (seleccionar)="seleccionarPelicula($event)"
+        (verDetalle)="abrirModal($event)"
+        style="width: 100%;">
+      </app-pelicula-card>
+    </ion-col>
+  }
+</ion-row>
+
+      <!-- Lista de Seleccionadas (Abajo) -->
+      <ion-row class="ion-margin-top">
         <ion-col size="12">
-          <p>No has seleccionado ninguna película todavía.</p>
+          <hr />
+          <h2>Mi Lista de Películas Seleccionadas ({{ peliculasSeleccionadas.length }})</h2>
         </ion-col>
-      } @else {
-        @for (item of peliculasSeleccionadas; track item.id) {
-          <ion-col size="12" size-xs="6" size-sm="4" size-md="3">
-            <ion-card class="tarjeta-pelicula seleccionada">
-              <!-- Property Binding en la imagen de la tarjeta -->
-               <!--<img [src]="item.poster" [alt]="item.titulo" class="img-catalogo" />-->
-              <img [src]="item.poster" [alt]="item.titulo" class="img-catalogo" (click)="abrirModal(item)" />
-              <ion-card-header>
-                <ion-card-title>{{ item.titulo }}</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
 
-                <!-- Event Binding para quitar de la lista -->
-                <ion-button expand="block" size="small" color="danger" (click)="seleccionarPelicula(item)">
-                  Quitar
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
+        @if (peliculasSeleccionadas.length === 0) {
+          <ion-col size="12">
+            <p>No has seleccionado ninguna película todavía.</p>
           </ion-col>
+        } @else {
+          @for (item of peliculasSeleccionadas; track item.id) {
+            <ion-col size="12" size-xs="6" size-sm="4" size-md="3">
+              <app-pelicula-card
+                [pelicula]="item"
+                [esSeleccionada]="true"
+                textoBoton="Quitar"
+                (seleccionar)="seleccionarPelicula($event)"
+                (verDetalle)="abrirModal($event)">
+              </app-pelicula-card>
+            </ion-col>
+          }
         }
-      }
-    </ion-row>
+      </ion-row>
+
+    }
+
   </ion-grid>
 
 
-  
+  <!-- Modal de Detalle -->
   <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarModal()">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-title>{{ peliculaParaModal?.titulo }}</ion-title>
           <ion-buttons slot="end">
-            
             <ion-button (click)="cerrarModal()">
               <ion-icon name="close-outline" size="large"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
+
       <ion-content class="ion-padding ion-text-center">
-       @if (peliculaParaModal) {
+        @if (peliculaParaModal) {
           <img [src]="peliculaParaModal.poster" [alt]="peliculaParaModal.titulo" class="img-modal" />
+          
           <h3 class="ion-margin-top">
             {{ peliculaParaModal.titulo }} ({{ peliculaParaModal['año'] }})
           </h3>
+
+          <!-- ID y RATING -->
+          <div class="ion-margin-vertical">
+            @if (peliculaParaModal.rating) {
+              <ion-badge color="warning">
+                ⭐ {{ peliculaParaModal.rating.rate }} / 5
+              </ion-badge>
+              <ion-note class="ion-margin-start">
+                ({{ peliculaParaModal.rating.count }} votos)
+              </ion-note>
+            }
+          </div>
+
           <p>{{ peliculaParaModal.descripcion || 'Sin descripción.' }}</p>
         }
       </ion-content>
