@@ -1,4 +1,3 @@
-/* Forzar alto uniforme en las tarjetas */
 .tarjeta-pelicula {
   height: 100%;
   display: flex;
@@ -7,18 +6,17 @@
   margin: 0;
 }
 
-/* Normalizar dimensiones de los pósters */
 .img-catalogo {
   width: 100%;
-  height: 320px; /* Alto fijo para todas las imágenes */
-  object-fit: cover; /* Recorta proporcionalmente sin deformar */
+  height: 320px;
+  object-fit: cover; 
   cursor: pointer;
 }
 
-/* Alineación limpia del título */
+
 ion-card-header {
   padding: 8px 12px;
-  min-height: 52px; /* Alinea los títulos de 1 o 2 líneas */
+  min-height: 52px;
   display: flex;
   align-items: center;
 }
@@ -28,7 +26,7 @@ ion-card-title {
   line-height: 1.2;
 }
 
-/* Botón alineado en la base */
+
 ion-card-content {
   padding: 8px 12px 12px 12px;
   margin-top: auto;

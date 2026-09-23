@@ -83,7 +83,7 @@ export class FolderPage {
 
   public seleccionarPelicula(pelicula: Pelicula): void {
     pelicula.seleccionada = !pelicula.seleccionada;
-  }
+  }//2
 
   public alternarEstadoFiltro(): void {
     this.deshabilitarFiltro = !this.deshabilitarFiltro;

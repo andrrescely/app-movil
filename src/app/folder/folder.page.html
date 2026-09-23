@@ -12,7 +12,6 @@
 <ion-content class="ion-padding">
   <ion-grid>
 
-    <!-- PANTALLA 2: SI ESTÁS EN FAVORITOS -->
     @if (folder() === 'favoritas') {
       <ion-row class="ion-justify-content-center ion-align-items-center" style="height: 60vh;">
         <ion-col size="12" class="ion-text-center">
@@ -22,10 +21,8 @@
       </ion-row>
     }
 
-    <!-- PANTALLA 1: SI ESTÁS EN CUALQUIER OTRA RUTA (CATÁLOGO / PRINCIPAL) -->
     @else {
 
-      <!-- Buscador -->
       <ion-row class="ion-align-items-center ion-margin-bottom">
         <ion-col size="12" size-md="8">
           <ion-input 
@@ -44,22 +41,20 @@
         </ion-col>
       </ion-row>
 
-      <!-- Catálogo Disponible -->
       <ion-row class="ion-align-items-stretch">
   @for (item of peliculasFiltradas; track item.id) {
     <ion-col size="12" size-xs="6" size-sm="4" size-md="3" class="ion-flex">
       <app-pelicula-card 
         [pelicula]="item"
-        [textoBoton]="item.seleccionada ? 'Seleccionada' : 'Seleccionar'"
+        [textoBoton]="item.seleccionada ? 'Seleccionada' : 'Seleccionar'"//1
         (seleccionar)="seleccionarPelicula($event)"
-        (verDetalle)="abrirModal($event)"
+        (verDetalle)="abrirModal($event)"//1
         style="width: 100%;">
       </app-pelicula-card>
     </ion-col>
   }
 </ion-row>
 
-      <!-- Lista de Seleccionadas (Abajo) -->
       <ion-row class="ion-margin-top">
         <ion-col size="12">
           <hr />
@@ -74,11 +69,11 @@
           @for (item of peliculasSeleccionadas; track item.id) {
             <ion-col size="12" size-xs="6" size-sm="4" size-md="3">
               <app-pelicula-card
-                [pelicula]="item"
-                [esSeleccionada]="true"
-                textoBoton="Quitar"
-                (seleccionar)="seleccionarPelicula($event)"
-                (verDetalle)="abrirModal($event)">
+                [pelicula]="item"//2
+                [esSeleccionada]="true"//1
+                textoBoton="Quitar" //1
+                (seleccionar)="seleccionarPelicula($event)"//2
+                (verDetalle)="abrirModal($event)">//2
               </app-pelicula-card>
             </ion-col>
           }
@@ -90,7 +85,6 @@
   </ion-grid>
 
 
-  <!-- Modal de Detalle -->
   <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarModal()">
     <ng-template>
       <ion-header>
@@ -112,7 +106,7 @@
             {{ peliculaParaModal.titulo }} ({{ peliculaParaModal['año'] }})
           </h3>
 
-          <!-- ID y RATING -->
+          
           <div class="ion-margin-vertical">
             @if (peliculaParaModal.rating) {
               <ion-badge color="warning">
