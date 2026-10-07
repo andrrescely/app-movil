@@ -4,7 +4,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      {{ folder() === 'favoritas' ? 'Favoritos' : 'Catálogo de Películas' }}
+      {{ folder() === 'favoritas' ? 'Mis Favoritas' : 'Catálogo de Películas' }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,23 +13,34 @@
   <ion-grid>
 
     @if (folder() === 'favoritas') {
-      <ion-row class="ion-justify-content-center ion-align-items-center" style="height: 60vh;">
-        <ion-col size="12" class="ion-text-center">
-          <h2>Aún no tienes películas en favoritos</h2>
-          <p>Esta sección estará disponible próximamente.</p>
-        </ion-col>
+      <ion-row class="ion-align-items-stretch">
+        @for (item of peliculasSeleccionadas; track item.id) {
+          <ion-col
+            size="12" size-xs="6" size-sm="4" size-md="3" class="ion-flex">
+            <app-pelicula-card
+              [pelicula]="item"
+              [esSeleccionada]="true"
+              textoBoton="Quitar de favoritas"
+              (seleccionar)="quitarFavorita($event)"
+              (verDetalle)="abrirModal($event)"
+              style="width: 100%;">
+            </app-pelicula-card>
+          </ion-col>
+        } @empty {
+          <ion-col size="12" class="ion-text-center">
+            <h2>Aún no tienes películas en favoritos</h2>
+            <p>Selecciona películas desde el catálogo para verlas aquí.</p>
+          </ion-col>
+        }
       </ion-row>
-    }
-
-    @else {
-
+    } @else {
       <ion-row class="ion-align-items-center ion-margin-bottom">
         <ion-col size="12" size-md="8">
-          <ion-input 
-            label="Buscar película" 
+          <ion-input
+            label="Buscar película"
             label-placement="floating"
-            fill="outline" 
-            [disabled]="deshabilitarFiltro" 
+            fill="outline"
+            [disabled]="deshabilitarFiltro"
             [(ngModel)]="filtroBusqueda">
           </ion-input>
           <ion-note class="ion-margin-top">Buscando: <strong>{{ filtroBusqueda }}</strong></ion-note>
@@ -42,41 +53,20 @@
       </ion-row>
 
       <ion-row class="ion-align-items-stretch">
-  @for (item of peliculasFiltradas; track item.id) {
-    <ion-col size="12" size-xs="6" size-sm="4" size-md="3" class="ion-flex">
-      <app-pelicula-card 
-        [pelicula]="item"
-        [textoBoton]="item.seleccionada ? 'Seleccionada' : 'Seleccionar'"//1
-        (seleccionar)="seleccionarPelicula($event)"
-        (verDetalle)="abrirModal($event)"//1
-        style="width: 100%;">
-      </app-pelicula-card>
-    </ion-col>
-  }
-</ion-row>
-
-      <ion-row class="ion-margin-top">
-        <ion-col size="12">
-          <hr />
-          <h2>Mi Lista de Películas Seleccionadas ({{ peliculasSeleccionadas.length }})</h2>
-        </ion-col>
-
-        @if (peliculasSeleccionadas.length === 0) {
-          <ion-col size="12">
-            <p>No has seleccionado ninguna película todavía.</p>
+        @for (item of peliculasFiltradas; track item.id) {
+          <ion-col size="12" size-xs="6" size-sm="4" size-md="3" class="ion-flex">
+            <app-pelicula-card
+              [pelicula]="item"
+              [textoBoton]="item.seleccionada ? 'En favoritas' : 'Seleccionar'"
+              (seleccionar)="guardarPadre($event)"
+              (verDetalle)="abrirModal($event)"
+              style="width: 100%;">
+            </app-pelicula-card>
           </ion-col>
-        } @else {
-          @for (item of peliculasSeleccionadas; track item.id) {
-            <ion-col size="12" size-xs="6" size-sm="4" size-md="3">
-              <app-pelicula-card
-                [pelicula]="item"//2
-                [esSeleccionada]="true"//1
-                textoBoton="Quitar" //1
-                (seleccionar)="seleccionarPelicula($event)"//2
-                (verDetalle)="abrirModal($event)">//2
-              </app-pelicula-card>
-            </ion-col>
-          }
+        } @empty {
+          <ion-col size="12" class="ion-text-center">
+            <p>No se encontraron películas con esa búsqueda.</p>
+          </ion-col>
         }
       </ion-row>
 
@@ -101,12 +91,12 @@
       <ion-content class="ion-padding ion-text-center">
         @if (peliculaParaModal) {
           <img [src]="peliculaParaModal.poster" [alt]="peliculaParaModal.titulo" class="img-modal" />
-          
+
           <h3 class="ion-margin-top">
             {{ peliculaParaModal.titulo }} ({{ peliculaParaModal['año'] }})
           </h3>
 
-          
+
           <div class="ion-margin-vertical">
             @if (peliculaParaModal.rating) {
               <ion-badge color="warning">
