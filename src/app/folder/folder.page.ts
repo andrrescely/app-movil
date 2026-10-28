@@ -62,25 +62,39 @@ export class FolderPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.servicePelicula.consultarPeliculasAPI().subscribe({
-      next: (data) => {
-        this.peliculas = data;
-      },
-      error: (error) => {
-        console.error('Error al consumir el API de películas:', error);
-      }
-    });
+    // Si ya hay datos en el servicio, los recuperamos de inmediato para que no se pierdan al navegar
+    const listaActual = this.servicePelicula.obtenerLista();
+    if (listaActual.length > 0) {
+      this.peliculas = listaActual;
+    } else {
+      // Si no, consumimos la API por primera vez
+      this.servicePelicula.consultarPeliculasAPI().subscribe({
+        next: (data) => {
+          this.peliculas = data;
+          // Guardamos cada una en el servicio para mantener el estado en memoria
+          data.forEach(p => this.servicePelicula.agregarService(p));
+        },
+        error: (error) => {
+          console.error('Error al consumir el API de películas:', error);
+        }
+      });
+    }
   }
 
-  // Métodos requeridos por el HTML para las tarjetas
   public guardarPadre(pelicula: Pelicula): void {
     pelicula.seleccionada = true;
     this.servicePelicula.agregarService(pelicula);
+    
+    // Ejemplo del uso del método POST que enseñó el profesor
+    this.servicePelicula.guardarPeliculaAPI(pelicula).subscribe({
+      next: (res) => console.log('Guardado en servidor con POST exitosamente:', res),
+      error: (err) => console.error('Error en el POST:', err)
+    });
   }
 
   public quitarFavorita(pelicula: Pelicula): void {
     pelicula.seleccionada = false;
-    this.servicePelicula.agregarService(pelicula); // El servicio se encarga de alternar/quitar
+    this.servicePelicula.quitarService(pelicula);
   }
 
   public alternarEstadoFiltro(): void {
