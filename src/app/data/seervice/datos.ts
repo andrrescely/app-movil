@@ -9,48 +9,49 @@ import { Pelicula } from '../interfaces/pelicula.model';
 })
 export class Datos {
   
-  // Arreglo privado en memoria como lo explicó el profesor
   private listaPeliculasService: Pelicula[] = [];
   private http = inject(HttpClient);
   
-  // Tu URL exacta de TMDb
   private url = 'https://api.themoviedb.org/3/movie/popular?api_key=c2f13e80292869683c5c8d9668f4b909&language=es-ES';
-  
-  // URL de prueba para el método POST (similar a la de clase)
   private urlPost = 'https://jsonplaceholder.typicode.com/posts';
 
   constructor() {}
 
-  // Agregar película a la lista en memoria
-  agregarService(pelicula: Pelicula): void {
-    if (!this.listaPeliculasService.some(p => p.id === pelicula.id)) {
-      this.listaPeliculasService.push(pelicula);
+  // Inicializa o sincroniza la lista completa en memoria
+  guardarListaCompleta(peliculas: Pelicula[]): void {
+    if (this.listaPeliculasService.length === 0) {
+      this.listaPeliculasService = peliculas;
     }
   }
 
-  // Quitar película de la lista en memoria
-  quitarService(pelicula: Pelicula): void {
-    const index = this.listaPeliculasService.findIndex(p => p.id === pelicula.id);
-    if (index > -1) {
-      this.listaPeliculasService.splice(index, 1);
-    }
-  }
-
-  // Obtener toda la lista
   obtenerLista(): Pelicula[] {
     return this.listaPeliculasService;
   }
 
-  // Obtener las favoritas marcadas
+  // Retorna únicamente las que tienen seleccionada = true
   obtenerFavoritas(): Pelicula[] {
     return this.listaPeliculasService.filter(p => p.seleccionada);
   }
 
-  // 1. MÉTODO GET: Consultar el API de películas
+  // Alterna o actualiza el estado de selección de una película por su ID
+  agregarService(pelicula: Pelicula): void {
+    const item = this.listaPeliculasService.find(p => p.id === pelicula.id);
+    if (item) {
+      item.seleccionada = true;
+    }
+  }
+
+  quitarService(pelicula: Pelicula): void {
+    const item = this.listaPeliculasService.find(p => p.id === pelicula.id);
+    if (item) {
+      item.seleccionada = false; // Solo apaga la estrella, no la borra del catálogo principal
+    }
+  }
+
   consultarPeliculasAPI(): Observable<Pelicula[]> {
     return this.http.get<any>(this.url).pipe(
       map(response => {
-        return response.results.map((item: any) => ({
+        const nuevasPeliculas = response.results.map((item: any) => ({
           id: item.id,
           titulo: item.title,
           poster: item.poster_path 
@@ -64,11 +65,18 @@ export class Datos {
             count: item.vote_count || 0
           }
         }));
+
+        // Si ya teníamos elementos guardados en memoria, respetamos su estado de favoritos
+        if (this.listaPeliculasService.length > 0) {
+          return this.listaPeliculasService;
+        }
+
+        this.listaPeliculasService = nuevasPeliculas;
+        return this.listaPeliculasService;
       })
     );
   }
 
-  // 2. MÉTODO POST: Enviar datos al servidor tal como lo explicó el profesor
   guardarPeliculaAPI(pelicula: Pelicula): Observable<any> {
     return this.http.post<any>(this.urlPost, pelicula);
   }

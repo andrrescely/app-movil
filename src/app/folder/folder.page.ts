@@ -62,17 +62,13 @@ export class FolderPage implements OnInit {
   }
 
   ngOnInit(): void {
-    // Si ya hay datos en el servicio, los recuperamos de inmediato para que no se pierdan al navegar
     const listaActual = this.servicePelicula.obtenerLista();
     if (listaActual.length > 0) {
       this.peliculas = listaActual;
     } else {
-      // Si no, consumimos la API por primera vez
       this.servicePelicula.consultarPeliculasAPI().subscribe({
         next: (data) => {
           this.peliculas = data;
-          // Guardamos cada una en el servicio para mantener el estado en memoria
-          data.forEach(p => this.servicePelicula.agregarService(p));
         },
         error: (error) => {
           console.error('Error al consumir el API de películas:', error);
@@ -85,9 +81,9 @@ export class FolderPage implements OnInit {
     pelicula.seleccionada = true;
     this.servicePelicula.agregarService(pelicula);
     
-    // Ejemplo del uso del método POST que enseñó el profesor
+    // Método POST requerido por la rúbrica
     this.servicePelicula.guardarPeliculaAPI(pelicula).subscribe({
-      next: (res) => console.log('Guardado en servidor con POST exitosamente:', res),
+      next: (res) => console.log('POST exitoso:', res),
       error: (err) => console.error('Error en el POST:', err)
     });
   }
@@ -95,6 +91,8 @@ export class FolderPage implements OnInit {
   public quitarFavorita(pelicula: Pelicula): void {
     pelicula.seleccionada = false;
     this.servicePelicula.quitarService(pelicula);
+    // Forzamos la actualización local de la vista
+    this.peliculas = [...this.servicePelicula.obtenerLista()];
   }
 
   public alternarEstadoFiltro(): void {
