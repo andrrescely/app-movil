@@ -17,6 +17,7 @@ import {
   IonIcon,
   IonBadge
 } from '@ionic/angular';
+
 import { addIcons } from 'ionicons';
 import { closeOutline, starOutline } from 'ionicons/icons';
 import { Pelicula } from '../data/interfaces/pelicula.model';
@@ -42,17 +43,16 @@ import { PeliculaCardComponent } from '../componentes/pelicula-card/pelicula-car
     IonNote,
     IonModal,
     IonIcon,
-    FormsModule,
     IonBadge,
+    FormsModule,
     PeliculaCardComponent
   ]
 })
 export class FolderPage implements OnInit {
   readonly folder = input.required<string>();
-
+  
   public filtroBusqueda: string = '';
   public deshabilitarFiltro: boolean = false;
-  
   public modalAbierto: boolean = false;
   public peliculaParaModal: Pelicula | null = null;
   public peliculas: Pelicula[] = [];
@@ -62,15 +62,29 @@ export class FolderPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.peliculas = this.servicePelicula.obtenerLista();
+    this.servicePelicula.consultarPeliculasAPI().subscribe({
+      next: (data) => {
+        this.peliculas = data;
+      },
+      error: (error) => {
+        console.error('Error al consumir el API de películas:', error);
+      }
+    });
   }
 
+  // Métodos requeridos por el HTML para las tarjetas
   public guardarPadre(pelicula: Pelicula): void {
+    pelicula.seleccionada = true;
     this.servicePelicula.agregarService(pelicula);
   }
 
   public quitarFavorita(pelicula: Pelicula): void {
-    this.servicePelicula.quitarService(pelicula);
+    pelicula.seleccionada = false;
+    this.servicePelicula.agregarService(pelicula); // El servicio se encarga de alternar/quitar
+  }
+
+  public alternarEstadoFiltro(): void {
+    this.deshabilitarFiltro = !this.deshabilitarFiltro;
   }
 
   public abrirModal(pelicula: Pelicula): void {
@@ -83,15 +97,10 @@ export class FolderPage implements OnInit {
     this.peliculaParaModal = null;
   }
 
-  public alternarEstadoFiltro(): void {
-    this.deshabilitarFiltro = !this.deshabilitarFiltro;
-  }
-
   public get peliculasFiltradas(): Pelicula[] {
     const busqueda = (this.filtroBusqueda ?? '').trim().toLowerCase();
-
-    return this.peliculas.filter(pelicula =>
-      pelicula.titulo.toLowerCase().includes(busqueda)
+    return this.peliculas.filter(p => 
+      p.titulo.toLowerCase().includes(busqueda)
     );
   }
 

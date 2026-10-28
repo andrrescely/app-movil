@@ -4,7 +4,7 @@ export interface Pelicula {
   id: number;
   titulo: string;
   poster: string;
-  año: number;
+  anio: number;
   seleccionada: boolean;
   descripcion?: string;
   rating?: Rating;
