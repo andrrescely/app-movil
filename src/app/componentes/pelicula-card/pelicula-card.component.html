@@ -1,13 +1,13 @@
 <ion-card class="tarjeta-pelicula" [class.seleccionada]="esSeleccionada">
   <img 
-    [src]="pelicula.poster" 
-    [alt]="pelicula.titulo" 
+    [src]="pelicula.poster_path" 
+    [alt]="pelicula.title" 
     class="img-catalogo" 
     (click)="onAbrirModal()" 
   />
 
   <ion-card-header>
-    <ion-card-title>{{ pelicula.titulo }}</ion-card-title>
+    <ion-card-title>{{ pelicula.title }}</ion-card-title>
   </ion-card-header>
 
   <ion-card-content>

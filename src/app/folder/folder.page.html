@@ -79,7 +79,7 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>{{ peliculaParaModal?.titulo }}</ion-title>
+          <ion-title>{{ peliculaParaModal?.title }}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="cerrarModal()">
               <ion-icon name="close-outline" size="large"></ion-icon>
@@ -90,25 +90,24 @@
 
       <ion-content class="ion-padding ion-text-center">
         @if (peliculaParaModal) {
-          <img [src]="peliculaParaModal.poster" [alt]="peliculaParaModal.titulo" class="img-modal" />
+          <img [src]="peliculaParaModal.poster_path" [alt]="peliculaParaModal.title" class="img-modal" />
 
         <h3 class="ion-margin-top">
-          {{ peliculaParaModal.titulo }} ({{ peliculaParaModal.anio }})
+          {{ peliculaParaModal.title }} ({{ peliculaParaModal.release_date }})
         </h3>
 
-
           <div class="ion-margin-vertical">
-            @if (peliculaParaModal.rating) {
+            @if (peliculaParaModal.vote_average) {
               <ion-badge color="warning">
-                ⭐ {{ peliculaParaModal.rating.rate }} / 5
+                ⭐ {{ peliculaParaModal.vote_average }} / 10
               </ion-badge>
               <ion-note class="ion-margin-start">
-                ({{ peliculaParaModal.rating.count }} votos)
+                ({{ peliculaParaModal.vote_count }} votos)
               </ion-note>
             }
           </div>
 
-          <p>{{ peliculaParaModal.descripcion || 'Sin descripción.' }}</p>
+          <p>{{ peliculaParaModal.overview || 'Sin descripción.' }}</p>
         }
       </ion-content>
     </ng-template>

@@ -66,9 +66,25 @@ export class FolderPage implements OnInit {
     if (listaActual.length > 0) {
       this.peliculas = listaActual;
     } else {
+      // Consumimos el GET básico de la API
       this.servicePelicula.consultarPeliculasAPI().subscribe({
-        next: (data) => {
-          this.peliculas = data;
+        next: (response) => {
+          // Adaptamos los resultados de TMDb al modelo
+          this.peliculas = response.results.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            poster_path: item.poster_path 
+              ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
+              : 'https://via.placeholder.com/500x750?text=Sin+Imagen',
+            // Extraemos solo el año de forma segura (ej. "2026")
+            release_date: item.release_date ? item.release_date.split('-')[0] : '2026',
+            seleccionada: false,
+            overview: item.overview,
+            vote_average: item.vote_average,
+            vote_count: item.vote_count
+          }));
+          
+          this.servicePelicula.guardarListaCompleta(this.peliculas);
         },
         error: (error) => {
           console.error('Error al consumir el API de películas:', error);
@@ -112,7 +128,7 @@ export class FolderPage implements OnInit {
   public get peliculasFiltradas(): Pelicula[] {
     const busqueda = (this.filtroBusqueda ?? '').trim().toLowerCase();
     return this.peliculas.filter(p => 
-      p.titulo.toLowerCase().includes(busqueda)
+      p.title.toLowerCase().includes(busqueda)
     );
   }
 

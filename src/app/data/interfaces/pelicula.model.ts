@@ -1,11 +1,10 @@
-import { Rating } from './rating.model';
-
 export interface Pelicula {
   id: number;
-  titulo: string;
-  poster: string;
-  anio: number;
-  seleccionada: boolean;
-  descripcion?: string;
-  rating?: Rating;
+  title: string;        
+  poster_path: string;  
+  release_date: string; 
+  seleccionada?: boolean;
+  overview?: string;    
+  vote_average?: number;
+  vote_count?: number;
 }
