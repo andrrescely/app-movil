@@ -4,7 +4,10 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      {{ folder() === 'favoritas' ? 'Mis Favoritas' : 'Catálogo de Películas' }}
+      {{ 
+        folder() === 'favoritas' ? 'Mis Favoritas' : 
+        (folder() === 'suscripcion' ? 'Suscríbete al Boletín' : 'Catálogo de Películas') 
+      }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -28,12 +31,62 @@
           </ion-col>
         } @empty {
           <ion-col size="12" class="ion-text-center">
-            <h2>Aún no tienes películas en favoritos</h2>
-            <p>Selecciona películas desde el catálogo para verlas aquí.</p>
+            <h2>Aún no tienes peliculas en favoritos</h2>
+            <p>Selecciona películas desde el catalogo para verlas aquí.</p>
           </ion-col>
         }
       </ion-row>
+
+    } @else if (folder() === 'suscripcion') {
+      
+      <ion-row class="ion-justify-content-center ion-align-items-center" style="min-height: 70vh;">
+        <ion-col size="12" size-md="6">
+          <ion-card class="ion-padding">
+            <ion-card-header>
+              <ion-card-title class="ion-text-center">¡No te pierdas ningún estreno!</ion-card-title>
+            </ion-card-header>
+            
+            <ion-card-content>
+              <form [formGroup]="suscripcionForm" (ngSubmit)="suscribirse()">
+                
+                <ion-item class="ion-margin-bottom">
+                  <ion-input 
+                    label="Nombre completo" 
+                    label-placement="floating" 
+                    fill="outline"
+                    formControlName="nombre" 
+                    placeholder="Escribe tu nombre">
+                  </ion-input>
+                </ion-item>
+
+                <ion-item class="ion-margin-bottom">
+                  <ion-input 
+                    label="Correo electrónico" 
+                    label-placement="floating" 
+                    fill="outline"
+                    type="email" 
+                    formControlName="correo" 
+                    placeholder="correo@ejemplo.com">
+                  </ion-input>
+                </ion-item>
+
+                <ion-button 
+                  expand="block" 
+                  type="submit" 
+                  [disabled]="!suscripcionForm.valid" 
+                  color="primary"
+                  class="ion-margin-top">
+                  Suscribirme ahora
+                </ion-button>
+
+              </form>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
     } @else {
+
       <ion-row class="ion-align-items-center ion-margin-bottom">
         <ion-col size="12" size-md="8">
           <ion-input
@@ -74,7 +127,6 @@
 
   </ion-grid>
 
-
   <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarModal()">
     <ng-template>
       <ion-header>
@@ -92,9 +144,9 @@
         @if (peliculaParaModal) {
           <img [src]="peliculaParaModal.poster_path" [alt]="peliculaParaModal.title" class="img-modal" />
 
-        <h3 class="ion-margin-top">
-          {{ peliculaParaModal.title }} ({{ peliculaParaModal.release_date }})
-        </h3>
+          <h3 class="ion-margin-top">
+            {{ peliculaParaModal.title }} ({{ peliculaParaModal.release_date }})
+          </h3>
 
           <div class="ion-margin-vertical">
             @if (peliculaParaModal.vote_average) {

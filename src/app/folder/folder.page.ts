@@ -1,5 +1,5 @@
-import { Component, input, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, input, OnInit, inject } from '@angular/core';
+import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import {
   IonHeader,
   IonToolbar,
@@ -15,10 +15,16 @@ import {
   IonNote,
   IonModal,
   IonIcon,
-  IonBadge
+  IonBadge,
+  IonItem,
+  IonCard,          
+  IonCardHeader,    
+  IonCardTitle,     
+  IonCardContent
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
+import emailjs from 'emailjs-com';
 import { closeOutline, starOutline } from 'ionicons/icons';
 import { Pelicula } from '../data/interfaces/pelicula.model';
 import { Datos } from '../data/seervice/datos';
@@ -42,9 +48,15 @@ import { PeliculaCardComponent } from '../componentes/pelicula-card/pelicula-car
     IonCol,
     IonNote,
     IonModal,
+    IonCard,        
+    IonCardHeader,  
+    IonCardTitle,   
+    IonCardContent,
     IonIcon,
     IonBadge,
+    IonItem,
     FormsModule,
+    ReactiveFormsModule,
     PeliculaCardComponent
   ]
 })
@@ -57,7 +69,12 @@ export class FolderPage implements OnInit {
   public peliculaParaModal: Pelicula | null = null;
   public peliculas: Pelicula[] = [];
 
-  constructor(private servicePelicula: Datos) {
+  public suscripcionForm!: FormGroup;
+
+  private fb = inject(FormBuilder);
+  private servicePelicula = inject(Datos);
+
+  constructor() {
     addIcons({ closeOutline, starOutline });
   }
 
@@ -66,17 +83,14 @@ export class FolderPage implements OnInit {
     if (listaActual.length > 0) {
       this.peliculas = listaActual;
     } else {
-      // Consumimos el GET básico de la API
       this.servicePelicula.consultarPeliculasAPI().subscribe({
         next: (response) => {
-          // Adaptamos los resultados de TMDb al modelo
           this.peliculas = response.results.map((item: any) => ({
             id: item.id,
             title: item.title,
             poster_path: item.poster_path 
               ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
               : 'https://via.placeholder.com/500x750?text=Sin+Imagen',
-            // Extraemos solo el año de forma segura (ej. "2026")
             release_date: item.release_date ? item.release_date.split('-')[0] : '2026',
             seleccionada: false,
             overview: item.overview,
@@ -91,13 +105,38 @@ export class FolderPage implements OnInit {
         }
       });
     }
+
+    this.suscripcionForm = this.fb.group({
+      nombre: ['', [Validators.required]],   
+      correo: ['', [Validators.required, Validators.email]]
+    });
+  }
+
+  public suscribirse(): void {
+    if (this.suscripcionForm.valid) {
+      const datosSuscripcion = this.suscripcionForm.value;
+
+      const templateParams = {
+        to_name: datosSuscripcion.nombre,
+        to_email: datosSuscripcion.correo
+      };
+
+      emailjs.send('service_h2yibu4', 'template_zjqbbpb', templateParams, 'Df7NfnfMIDPAB5sCL')
+        .then((response) => {
+           console.log('Correo enviado con éxito!', response.status, response.text);
+           alert(`¡Gracias ${datosSuscripcion.nombre}! Te has suscrito correctamente y se ha enviado un correo a ${datosSuscripcion.correo}.`);
+           this.suscripcionForm.reset();
+        }, (error) => {
+           console.error('Error al enviar el correo:', error);
+           alert('Hubo un error al enviar el correo. Revisa la consola.');
+        });
+    }
   }
 
   public guardarPadre(pelicula: Pelicula): void {
     pelicula.seleccionada = true;
     this.servicePelicula.agregarService(pelicula);
     
-    // Método POST requerido por la rúbrica
     this.servicePelicula.guardarPeliculaAPI(pelicula).subscribe({
       next: (res) => console.log('POST exitoso:', res),
       error: (err) => console.error('Error en el POST:', err)
@@ -107,7 +146,6 @@ export class FolderPage implements OnInit {
   public quitarFavorita(pelicula: Pelicula): void {
     pelicula.seleccionada = false;
     this.servicePelicula.quitarService(pelicula);
-    // Forzamos la actualización local de la vista
     this.peliculas = [...this.servicePelicula.obtenerLista()];
   }
 

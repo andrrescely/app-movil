@@ -56,10 +56,10 @@ export class AppComponent {
     { title: 'Películas', url: '/folder/Peliculas', icon: 'film' },
     { title: 'Mis Favoritas', url: '/folder/favoritas', icon: 'star' },
     { title: 'Series', url: '/folder/series', icon: 'tv' },
+    { title: 'Suscríbete', url: '/folder/suscripcion', icon: 'mail' },
   ];
 
   constructor() {
-    // Registramos todas las variantes para que Ionic no falle nunca
     addIcons({ 
       film, 
       filmOutline, 
