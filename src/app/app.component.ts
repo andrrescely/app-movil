@@ -16,7 +16,6 @@ import {
   IonNote
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-// Importamos también las versiones sharp que Ionic busca por debajo
 import { 
   film, 
   filmOutline, 
@@ -55,7 +54,6 @@ export class AppComponent {
   protected readonly appPages = [
     { title: 'Películas', url: '/folder/Peliculas', icon: 'film' },
     { title: 'Mis Favoritas', url: '/folder/favoritas', icon: 'star' },
-    { title: 'Series', url: '/folder/series', icon: 'tv' },
     { title: 'Suscríbete', url: '/folder/suscripcion', icon: 'mail' },
   ];
 

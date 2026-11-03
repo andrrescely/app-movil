@@ -97,11 +97,7 @@ export class FolderPage implements OnInit {
             vote_average: item.vote_average,
             vote_count: item.vote_count
           }));
-          
           this.servicePelicula.guardarListaCompleta(this.peliculas);
-        },
-        error: (error) => {
-          console.error('Error al consumir el API de películas:', error);
         }
       });
     }
@@ -115,7 +111,6 @@ export class FolderPage implements OnInit {
   public suscribirse(): void {
     if (this.suscripcionForm.valid) {
       const datosSuscripcion = this.suscripcionForm.value;
-
       const templateParams = {
         to_name: datosSuscripcion.nombre,
         to_email: datosSuscripcion.correo
@@ -123,12 +118,10 @@ export class FolderPage implements OnInit {
 
       emailjs.send('service_h2yibu4', 'template_zjqbbpb', templateParams, 'Df7NfnfMIDPAB5sCL')
         .then((response) => {
-           console.log('Correo enviado con éxito!', response.status, response.text);
            alert(`¡Gracias ${datosSuscripcion.nombre}! Te has suscrito correctamente y se ha enviado un correo a ${datosSuscripcion.correo}.`);
            this.suscripcionForm.reset();
         }, (error) => {
-           console.error('Error al enviar el correo:', error);
-           alert('Hubo un error al enviar el correo. Revisa la consola.');
+           alert('Hubo un error al enviar el correo');
         });
     }
   }
@@ -136,10 +129,9 @@ export class FolderPage implements OnInit {
   public guardarPadre(pelicula: Pelicula): void {
     pelicula.seleccionada = true;
     this.servicePelicula.agregarService(pelicula);
-    
+
     this.servicePelicula.guardarPeliculaAPI(pelicula).subscribe({
-      next: (res) => console.log('POST exitoso:', res),
-      error: (err) => console.error('Error en el POST:', err)
+      error: () => {}
     });
   }
 
