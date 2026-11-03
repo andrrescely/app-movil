@@ -88,9 +88,7 @@ export class FolderPage implements OnInit {
           this.peliculas = response.results.map((item: any) => ({
             id: item.id,
             title: item.title,
-            poster_path: item.poster_path 
-              ? `https://image.tmdb.org/t/p/w500${item.poster_path}` 
-              : 'https://via.placeholder.com/500x750?text=Sin+Imagen',
+            poster_path: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
             release_date: item.release_date ? item.release_date.split('-')[0] : '2026',
             seleccionada: false,
             overview: item.overview,
